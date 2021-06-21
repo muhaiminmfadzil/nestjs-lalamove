@@ -1,11 +1,11 @@
 {
-  "name": "@nestjsplus/nestjs-package-starter",
+  "name": "nestjs-lalamove",
   "version": "1.0.0",
-  "description": "NestJS npm package starter",
-  "author": "John Biundo <johnfbiundo@gmail.com>",
+  "description": "NestJS api wrapper for lalamove",
+  "author": "Muhaimin MF <muhaiminmfadzil@gmail.com>",
   "license": "MIT",
   "readmeFilename": "README.md",
-  "main": "dist/test.js",
+  "main": "dist/index.js",
   "files": [
     "dist/**/*",
     "*.md"
@@ -22,16 +22,16 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "keywords": [
-    "nestjs"
+    "nestjs","lalamove"
   ],
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nestjsplus/nestjs-package-starter"
+    "url": "https://github.com/muhaiminmfadzil/nestjs-lalamove"
   },
-  "bugs": "https://github.com/nestjsplus/nestjs-package-starter",
+  "bugs": "https://github.com/muhaiminmfadzil/nestjs-lalamove/issues",
   "peerDependencies": {
     "@nestjs/common": "^6.0.0"
   },
