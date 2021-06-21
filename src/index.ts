@@ -1,4 +1,3 @@
-// export public api from here
-// for example:
-// export * from './decorators';
-export * from './test';
+export * from './lalamove/lalamove.definition';
+export * from './lalamove/lalamove.module';
+export * from './lalamove/lalamove.service';
