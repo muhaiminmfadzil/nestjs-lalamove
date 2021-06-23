@@ -62,23 +62,28 @@ export class LalamoveService {
     }
   }
 
-  private getApiCaller(
-    httpMethod: HttpMethod,
-    path: string,
-    region?: string,
-    body?: any,
-  ) {
+  private getRegion(body: GetQuotationDto): string {
+    const senderAddress = body.stops[0].addresses;
+    let country: string;
+    for (const key in senderAddress) {
+      country = senderAddress[key].country;
+    }
+    return country;
+  }
+
+  private getApiCaller(httpMethod: HttpMethod, path: string, body?: any) {
     const time = new Date().getTime().toString();
     const method = this.getMethod(httpMethod);
     const jsonBody = JSON.stringify(body);
     const rawSignature = `${time}\r\n${method}\r\n${path}\r\n\r\n${jsonBody}`;
     const SIGNATURE = CryptoJS.HmacSHA256(rawSignature, this.secret).toString();
+    const region = this.getRegion(body);
 
     const headers = {
       'Content-type': 'application/json; charset=utf-8',
       Authorization: `hmac ${this.apiKey}:${time}:${SIGNATURE}`,
       Accept: 'application/json',
-      'X-LLM-Country': 'MY_KUL',
+      'X-LLM-Country': region,
     };
     const url = this.getUrl(path);
     const handleResponse = response => {
@@ -90,71 +95,49 @@ export class LalamoveService {
     };
 
     if (httpMethod === HttpMethod.GET) {
-      return (options = {}) => {
-        return this.httpService
-          .get('https://jsonplaceholder.typicode.com/todos/1', {
-            ...options,
-            headers,
-          })
-          .toPromise()
-          .then(handleResponse)
-          .catch(handlerError);
-      };
+      return this.httpService
+        .get(url, {
+          headers,
+        })
+        .toPromise()
+        .then(handleResponse)
+        .catch(handlerError);
     }
 
     if (httpMethod === HttpMethod.DELETE) {
-      return (data = {}, options = {}) => {
-        return this.httpService
-          .delete(url, { ...options, headers })
-          .toPromise()
-          .then(handleResponse)
-          .catch(handlerError);
-      };
+      return this.httpService
+        .delete(url, { headers })
+        .toPromise()
+        .then(handleResponse)
+        .catch(handlerError);
     }
 
     if (httpMethod === HttpMethod.POST) {
-      return () => {
-        return this.httpService
-          .post(url, { ...body }, { headers })
-          .toPromise()
-          .then(handleResponse)
-          .catch(handlerError);
-      };
+      return this.httpService
+        .post(url, { ...body }, { headers })
+        .toPromise()
+        .then(handleResponse)
+        .catch(handlerError);
     }
 
     if (httpMethod === HttpMethod.PUT) {
-      return (data = {}, options = {}) => {
-        return this.httpService
-          .put(url, { ...data }, { headers })
-          .toPromise()
-          .then(handleResponse)
-          .catch(handlerError);
-      };
+      return this.httpService
+        .put(url, { ...body }, { headers })
+        .toPromise()
+        .then(handleResponse)
+        .catch(handlerError);
     }
 
     if (httpMethod === HttpMethod.PATCH) {
-      return (data = {}, options = {}) => {
-        return this.httpService
-          .patch(url, { ...data }, { ...options, headers })
-          .toPromise()
-          .then(handleResponse)
-          .catch(handlerError);
-      };
+      return this.httpService
+        .patch(url, { ...body }, { headers })
+        .toPromise()
+        .then(handleResponse)
+        .catch(handlerError);
     }
   }
 
   async getQuotation(data: GetQuotationDto) {
-    const res = this.getApiCaller(
-      HttpMethod.POST,
-      '/v2/quotations',
-      'MY_KUL',
-      data,
-    );
-    return await res();
-  }
-
-  async getRandom() {
-    const api = this.getApiCaller(HttpMethod.GET, 'hello');
-    return await api();
+    return await this.getApiCaller(HttpMethod.POST, '/v2/quotations', data);
   }
 }

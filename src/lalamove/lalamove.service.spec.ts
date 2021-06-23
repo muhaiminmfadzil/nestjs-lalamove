@@ -5,51 +5,6 @@ import { LalamoveService } from './lalamove.service';
 
 const { APIKEY, SECRET } = process.env;
 
-xdescribe('Lalamove Wrong API key', () => {
-  let service: LalamoveService;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: LalamoveService,
-          useValue: new LalamoveService(new HttpService(), {
-            apiKey: 'wrong-api-key',
-            secret: 'wrong-secret',
-            sandbox: true,
-          }),
-        },
-      ],
-    }).compile();
-
-    service = module.get<LalamoveService>(LalamoveService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  // it('should return unauthorized user error', async () => {
-  //   const rate = await service.getQuotation({
-  //     bulk: [
-  //       {
-  //         pick_code: '55100',
-  //         pick_state: 'kul',
-  //         pick_country: 'MY',
-  //         send_code: '11900',
-  //         send_state: 'png',
-  //         send_country: 'MY',
-  //         weight: 1,
-  //       },
-  //     ],
-  //   });
-  //   // Api call success
-  //   expect(rate.api_status).toBe('Error');
-  //   // Return result
-  //   expect(rate.error_remark).toBe('Unauthorized user');
-  // });
-});
-
 describe('Lalamove Service', () => {
   let service: LalamoveService;
 
