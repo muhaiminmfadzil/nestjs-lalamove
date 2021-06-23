@@ -8,6 +8,7 @@ const CryptoJS = require('crypto-js');
 
 import { GetQuotationDto } from './dto/get-quotation.dto';
 import { RegionDto } from './dto/region.dto';
+import { PlaceOrderDto } from './dto/place-order.dto';
 
 @Injectable()
 export class LalamoveService {
@@ -71,7 +72,11 @@ export class LalamoveService {
     return country;
   }
 
-  private getApiCaller(httpMethod: HttpMethod, path: string, body?: any) {
+  private getApiCaller(
+    httpMethod: HttpMethod,
+    path: string,
+    body?: GetQuotationDto | PlaceOrderDto,
+  ) {
     const time = new Date().getTime().toString();
     const method = this.getMethod(httpMethod);
     const jsonBody = JSON.stringify(body);
