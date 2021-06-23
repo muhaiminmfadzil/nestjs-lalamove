@@ -145,4 +145,8 @@ export class LalamoveService {
   async getQuotation(data: GetQuotationDto) {
     return await this.getApiCaller(HttpMethod.POST, '/v2/quotations', data);
   }
+
+  async placeOrder(data: PlaceOrderDto) {
+    return await this.getApiCaller(HttpMethod.POST, '/v2/orders', data);
+  }
 }

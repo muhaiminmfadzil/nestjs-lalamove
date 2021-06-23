@@ -1,6 +1,7 @@
 require('dotenv').config();
 import { HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { send } from 'process';
 import { LalamoveService } from './lalamove.service';
 
 const { APIKEY, SECRET } = process.env;
@@ -29,60 +30,91 @@ describe('Lalamove Service', () => {
     expect(service).toBeDefined();
   });
 
-  describe('Get quotation', () => {
-    // Single rate checking
-    it('should return single rate with success api status', async () => {
-      const rate = await service.getQuotation({
-        serviceType: 'MOTORCYCLE',
-        specialRequests: [],
-        stops: [
-          {
-            // Location information for pick-up point
-            location: {
-              lat: '3.048593',
-              lng: '101.671568',
-            },
-            addresses: {
-              ms_MY: {
-                displayString:
-                  'Bumi Bukit Jalil, No 2-1, Jalan Jalil 1, Lebuhraya Bukit Jalil, Sungai Besi, 57000 Kuala Lumpur, Malaysia',
-                country: 'MY_KUL',
-              },
-            },
+  // 3.2611977841933264, 101.66906835308804 north
+  // 2.881286865907826, 101.78435653959467 south
+  // 2.971381883241138, 101.82963580944276 east
+  // 3.0396200092379595, 101.44151855415718 west
+
+  function randomNumber(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
+  }
+  function randomLocation(): { lat: string; lng: string } {
+    const lat = randomNumber(2.881286865907826, 3.2611977841933264).toString();
+    const lng = randomNumber(101.44151855415718, 101.82963580944276).toString();
+    return { lat, lng };
+  }
+  const senderLocation = randomLocation();
+  const receiverLocation = randomLocation();
+
+  const quotationData = {
+    serviceType: 'MOTORCYCLE',
+    specialRequests: [],
+    stops: [
+      {
+        // Location information for pick-up point
+        location: senderLocation,
+        addresses: {
+          ms_MY: {
+            displayString: 'Malaysia',
+            country: 'MY_KUL',
           },
-          {
-            // Location information for drop-off point (#1)
-            location: {
-              lat: '2.754873',
-              lng: '101.703744',
-            },
-            addresses: {
-              ms_MY: {
-                displayString: '64000 Sepang, Selangor, Malaysia',
-                country: 'MY_KUL',
-              },
-            },
+        },
+      },
+      {
+        // Location information for drop-off point (#1)
+        location: receiverLocation,
+        addresses: {
+          ms_MY: {
+            displayString: 'Malaysia',
+            country: 'MY_KUL',
           },
-        ],
-        // Pick-up point copntact details
-        requesterContact: {
-          name: 'Chris Wong',
+        },
+      },
+    ],
+    // Pick-up point copntact details
+    requesterContact: {
+      name: 'Chris Wong',
+      phone: '0376886555',
+    },
+    deliveries: [
+      {
+        toStop: 1,
+        toContact: {
+          name: 'Shen Ong',
           phone: '0376886555',
         },
-        deliveries: [
-          {
-            toStop: 1,
-            toContact: {
-              name: 'Shen Ong',
-              phone: '0376886555',
-            },
-            remarks: 'Do not take this order - SANDBOX CLIENT TEST',
-          },
-        ],
-      });
+        remarks: 'Do not take this order - SANDBOX CLIENT TEST',
+      },
+    ],
+  };
+
+  describe('Get quotation and order', () => {
+    let totalRate: { totalFee: string; totalFeeCurrency: string };
+
+    // Get quotation
+    it('should return successful price', async () => {
+      const rate = await service.getQuotation(quotationData);
 
       // Return result
       expect(rate.totalFeeCurrency).toBe('MYR');
+
+      totalRate = rate;
+    });
+
+    // Place order
+    it('should return successful order ref', async () => {
+      const orderData = {
+        ...quotationData,
+        quotedTotalFee: {
+          amount: totalRate.totalFee,
+          currency: 'MYR',
+        },
+      };
+
+      const order = await service.placeOrder(orderData);
+
+      // Return result
+      expect(order).toHaveProperty('orderRef');
     });
   });
 });
