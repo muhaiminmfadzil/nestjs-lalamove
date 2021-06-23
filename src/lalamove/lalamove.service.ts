@@ -7,7 +7,6 @@ import {
 const CryptoJS = require('crypto-js');
 
 import { GetQuotationDto } from './dto/get-quotation.dto';
-import { RegionDto } from './dto/region.dto';
 import { PlaceOrderDto } from './dto/place-order.dto';
 
 @Injectable()
@@ -80,12 +79,10 @@ export class LalamoveService {
   ) {
     const time = new Date().getTime().toString();
     const method = this.getMethod(httpMethod);
-    let rawSignature: string;
-    if (method === 'POST') {
-      const jsonBody = JSON.stringify(body);
-      rawSignature = `${time}\r\n${method}\r\n${path}\r\n\r\n${jsonBody}`;
-    } else {
-      rawSignature = `${time}\r\n${method}\r\n${path}\r\n\r\n`;
+    let rawSignature = `${time}\r\n${method}\r\n${path}\r\n\r\n`;
+    if (method !== 'GET') {
+      const jsonBody = JSON.stringify(body || {});
+      rawSignature = rawSignature + jsonBody;
     }
     const SIGNATURE = CryptoJS.HmacSHA256(rawSignature, this.secret).toString();
     const region = body ? this.getRegion(body) : reqRegion;
@@ -133,7 +130,7 @@ export class LalamoveService {
 
     if (httpMethod === HttpMethod.PUT) {
       return this.httpService
-        .put(url, { ...body }, { headers })
+        .put(url, {}, { headers })
         .toPromise()
         .then(handleResponse)
         .catch(handlerError);
@@ -141,7 +138,7 @@ export class LalamoveService {
 
     if (httpMethod === HttpMethod.PATCH) {
       return this.httpService
-        .patch(url, { ...body }, { headers })
+        .patch(url, {}, { headers })
         .toPromise()
         .then(handleResponse)
         .catch(handlerError);
@@ -178,6 +175,15 @@ export class LalamoveService {
     return await this.getApiCaller(
       HttpMethod.GET,
       `/v2/orders/${orderId}/drivers/${driverId}/location`,
+      null,
+      region,
+    );
+  }
+
+  async cancelOrder(orderId: string, region: string) {
+    return await this.getApiCaller(
+      HttpMethod.PUT,
+      `/v2/orders/${orderId}/cancel`,
       null,
       region,
     );

@@ -89,7 +89,7 @@ describe('Lalamove Service', () => {
     ],
   };
 
-  xdescribe('Get quotation, place order and get order details', () => {
+  describe('Get quotation, place order, get order details and cancel order', () => {
     let totalRate: { totalFee: string; totalFeeCurrency: string };
     let orderId: string;
 
@@ -133,6 +133,13 @@ describe('Lalamove Service', () => {
       expect(orderDetails).toHaveProperty('shareLink');
       expect(orderDetails.price.amount).toBe(totalRate.totalFee);
       expect(orderDetails.price.currency).toBe(totalRate.totalFeeCurrency);
+    });
+
+    // Cancel order
+    it('should return successful cancel order', async () => {
+      const cancelOrder = await service.cancelOrder(orderId, region);
+      // Result of empty object
+      expect(cancelOrder).toMatchObject({});
     });
   });
 
