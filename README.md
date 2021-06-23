@@ -19,3 +19,7 @@
 ## Change Log
 
 See [Changelog](CHANGELOG.md) for more information.
+
+## License
+
+Licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
