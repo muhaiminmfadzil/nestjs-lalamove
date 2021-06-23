@@ -137,13 +137,27 @@ describe('Lalamove Service', () => {
   });
 
   describe('Get driver details', () => {
-    const randomOrderId = '1012436156907786240';
+    const randomOrderId = '11234';
     const randomDriverId = '123';
 
     // Get driver details with error 404
     it('should return unsuccessful driver details', async () => {
       try {
         await service.driverDetails(randomOrderId, randomDriverId, region);
+      } catch (error) {
+        expect(error.message).toBe('Request failed with status code 404');
+      }
+    });
+  });
+
+  describe('Get driver location', () => {
+    const randomOrderId = '34567';
+    const randomDriverId = '34896';
+
+    // Get driver location with error 404
+    it('should return unsuccessful driver location', async () => {
+      try {
+        await service.driverLocation(randomOrderId, randomDriverId, region);
       } catch (error) {
         expect(error.message).toBe('Request failed with status code 404');
       }

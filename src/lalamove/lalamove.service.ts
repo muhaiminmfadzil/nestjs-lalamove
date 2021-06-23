@@ -173,4 +173,13 @@ export class LalamoveService {
       region,
     );
   }
+
+  async driverLocation(orderId: string, driverId: string, region: string) {
+    return await this.getApiCaller(
+      HttpMethod.GET,
+      `/v2/orders/${orderId}/drivers/${driverId}/location`,
+      null,
+      region,
+    );
+  }
 }
