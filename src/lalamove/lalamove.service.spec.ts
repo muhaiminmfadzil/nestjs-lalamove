@@ -46,6 +46,7 @@ describe('Lalamove Service', () => {
   const senderLocation = randomLocation();
   const receiverLocation = randomLocation();
 
+  const region = 'MY_KUL';
   const quotationData = {
     serviceType: 'MOTORCYCLE',
     specialRequests: [],
@@ -56,7 +57,7 @@ describe('Lalamove Service', () => {
         addresses: {
           ms_MY: {
             displayString: 'Malaysia',
-            country: 'MY_KUL',
+            country: region,
           },
         },
       },
@@ -66,7 +67,7 @@ describe('Lalamove Service', () => {
         addresses: {
           ms_MY: {
             displayString: 'Malaysia',
-            country: 'MY_KUL',
+            country: region,
           },
         },
       },
@@ -88,8 +89,9 @@ describe('Lalamove Service', () => {
     ],
   };
 
-  describe('Get quotation and order', () => {
+  describe('Get quotation, place order and get order details', () => {
     let totalRate: { totalFee: string; totalFeeCurrency: string };
+    let orderId: string;
 
     // Get quotation
     it('should return successful price', async () => {
@@ -98,6 +100,7 @@ describe('Lalamove Service', () => {
       // Return result
       expect(rate.totalFeeCurrency).toBe('MYR');
 
+      // Save price
       totalRate = rate;
     });
 
@@ -115,6 +118,21 @@ describe('Lalamove Service', () => {
 
       // Return result
       expect(order).toHaveProperty('orderRef');
+
+      // Save order ref
+      orderId = order.orderRef;
+    });
+
+    // Check order details
+    it('should return order details', async () => {
+      const orderDetails = await service.orderDetails(orderId, region);
+
+      // Return result
+      expect(orderDetails).toHaveProperty('price');
+      expect(orderDetails).toHaveProperty('status');
+      expect(orderDetails).toHaveProperty('shareLink');
+      expect(orderDetails.price.amount).toBe(totalRate.totalFee);
+      expect(orderDetails.price.currency).toBe(totalRate.totalFeeCurrency);
     });
   });
 });

@@ -76,13 +76,19 @@ export class LalamoveService {
     httpMethod: HttpMethod,
     path: string,
     body?: GetQuotationDto | PlaceOrderDto,
+    reqRegion?: string,
   ) {
     const time = new Date().getTime().toString();
     const method = this.getMethod(httpMethod);
-    const jsonBody = JSON.stringify(body);
-    const rawSignature = `${time}\r\n${method}\r\n${path}\r\n\r\n${jsonBody}`;
+    let rawSignature: string;
+    if (method === 'POST') {
+      const jsonBody = JSON.stringify(body);
+      rawSignature = `${time}\r\n${method}\r\n${path}\r\n\r\n${jsonBody}`;
+    } else {
+      rawSignature = `${time}\r\n${method}\r\n${path}\r\n\r\n`;
+    }
     const SIGNATURE = CryptoJS.HmacSHA256(rawSignature, this.secret).toString();
-    const region = this.getRegion(body);
+    const region = body ? this.getRegion(body) : reqRegion;
 
     const headers = {
       'Content-type': 'application/json; charset=utf-8',
@@ -96,6 +102,10 @@ export class LalamoveService {
     };
 
     const handlerError = error => {
+      console.log(
+        '🚀 ~ file: lalamove.service.ts ~ line 100 ~ LalamoveService ~ error',
+        error,
+      );
       throw error;
     };
 
@@ -148,5 +158,14 @@ export class LalamoveService {
 
   async placeOrder(data: PlaceOrderDto) {
     return await this.getApiCaller(HttpMethod.POST, '/v2/orders', data);
+  }
+
+  async orderDetails(id: string, region: string) {
+    return await this.getApiCaller(
+      HttpMethod.GET,
+      `/v2/orders/${id}`,
+      null,
+      region,
+    );
   }
 }
