@@ -89,7 +89,7 @@ describe('Lalamove Service', () => {
     ],
   };
 
-  describe('Get quotation, place order and get order details', () => {
+  xdescribe('Get quotation, place order and get order details', () => {
     let totalRate: { totalFee: string; totalFeeCurrency: string };
     let orderId: string;
 
@@ -133,6 +133,20 @@ describe('Lalamove Service', () => {
       expect(orderDetails).toHaveProperty('shareLink');
       expect(orderDetails.price.amount).toBe(totalRate.totalFee);
       expect(orderDetails.price.currency).toBe(totalRate.totalFeeCurrency);
+    });
+  });
+
+  describe('Get driver details', () => {
+    const randomOrderId = '1012436156907786240';
+    const randomDriverId = '123';
+
+    // Get driver details with error 404
+    it('should return unsuccessful driver details', async () => {
+      try {
+        await service.driverDetails(randomOrderId, randomDriverId, region);
+      } catch (error) {
+        expect(error.message).toBe('Request failed with status code 404');
+      }
     });
   });
 });

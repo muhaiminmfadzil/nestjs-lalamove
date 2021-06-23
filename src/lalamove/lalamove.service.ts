@@ -102,10 +102,6 @@ export class LalamoveService {
     };
 
     const handlerError = error => {
-      console.log(
-        '🚀 ~ file: lalamove.service.ts ~ line 100 ~ LalamoveService ~ error',
-        error,
-      );
       throw error;
     };
 
@@ -160,10 +156,19 @@ export class LalamoveService {
     return await this.getApiCaller(HttpMethod.POST, '/v2/orders', data);
   }
 
-  async orderDetails(id: string, region: string) {
+  async orderDetails(orderId: string, region: string) {
     return await this.getApiCaller(
       HttpMethod.GET,
-      `/v2/orders/${id}`,
+      `/v2/orders/${orderId}`,
+      null,
+      region,
+    );
+  }
+
+  async driverDetails(orderId: string, driverId: string, region: string) {
+    return await this.getApiCaller(
+      HttpMethod.GET,
+      `/v2/orders/${orderId}/drivers/${driverId}`,
       null,
       region,
     );
