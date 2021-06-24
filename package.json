@@ -1,6 +1,6 @@
 {
   "name": "nestjs-lalamove",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "NestJS api wrapper for lalamove",
   "author": "Muhaimin MF <muhaiminmfadzil@gmail.com>",
   "license": "MIT",
