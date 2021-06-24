@@ -71,7 +71,7 @@ export class LalamoveService {
     return country;
   }
 
-  private getApiCaller(
+  private getHeaders(
     httpMethod: HttpMethod,
     path: string,
     body?: GetQuotationDto | PlaceOrderDto,
@@ -87,18 +87,28 @@ export class LalamoveService {
     const SIGNATURE = CryptoJS.HmacSHA256(rawSignature, this.secret).toString();
     const region = body ? this.getRegion(body) : reqRegion;
 
-    const headers = {
+    return {
       'Content-type': 'application/json; charset=utf-8',
       Authorization: `hmac ${this.apiKey}:${time}:${SIGNATURE}`,
       Accept: 'application/json',
       'X-LLM-Country': region,
     };
+  }
+
+  private getApiCaller(
+    httpMethod: HttpMethod,
+    path: string,
+    body?: GetQuotationDto | PlaceOrderDto,
+    reqRegion?: string,
+  ) {
+    const headers = this.getHeaders(httpMethod, path, body, reqRegion);
     const url = this.getUrl(path);
-    const handleResponse = response => {
+
+    const handleResponse = (response) => {
       return response.data;
     };
 
-    const handlerError = error => {
+    const handlerError = (error) => {
       throw error;
     };
 

@@ -1,7 +1,6 @@
 require('dotenv').config();
 import { HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { send } from 'process';
 import { LalamoveService } from './lalamove.service';
 
 const { APIKEY, SECRET } = process.env;
