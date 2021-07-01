@@ -12,7 +12,8 @@ import { PlaceOrderDto } from './dto/place-order.dto';
 @Injectable()
 export class LalamoveService {
   // Api endpoint
-  private readonly demoUrl = 'https://sandbox-rest.lalamove.com';
+  private readonly demoPartnerPortalUrl = 'https://rest.sandbox.lalamove.com';
+  private readonly demoPartnerToolUrl = 'https://sandbox-rest.lalamove.com';
   private readonly liveUrl = 'https://rest.lalamove.com';
 
   private sandbox: boolean;
@@ -20,6 +21,7 @@ export class LalamoveService {
   private secret: string;
   private logService?: LoggerService;
   private baseUrl: string;
+  private partnerPortal: boolean;
 
   constructor(
     private readonly httpService: HttpService,
@@ -29,6 +31,7 @@ export class LalamoveService {
     this.secret = options.secret;
     this.sandbox = options.sandbox || false;
     this.apiKey = options.apiKey;
+    this.partnerPortal = options.partnerPortal || false;
     this.logService = options.logger;
     this.setBaseUrl();
   }
@@ -37,7 +40,9 @@ export class LalamoveService {
     if (this.sandbox === false) {
       this.baseUrl = this.liveUrl;
     } else {
-      this.baseUrl = this.demoUrl;
+      this.baseUrl = this.partnerPortal
+        ? this.demoPartnerPortalUrl
+        : this.demoPartnerToolUrl;
     }
   }
 

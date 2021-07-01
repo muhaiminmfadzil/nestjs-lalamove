@@ -13,6 +13,7 @@ export enum HttpMethod {
 export interface LalamoveOptions {
   apiKey: string;
   secret: string;
+  partnerPortal?: boolean;
   sandbox?: boolean;
   logger?: LoggerService;
 }

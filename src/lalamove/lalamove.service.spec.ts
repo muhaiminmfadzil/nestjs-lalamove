@@ -16,6 +16,7 @@ describe('Lalamove Service', () => {
           useValue: new LalamoveService(new HttpService(), {
             apiKey: APIKEY,
             secret: SECRET,
+            partnerPortal: true,
             sandbox: true,
           }),
         },
