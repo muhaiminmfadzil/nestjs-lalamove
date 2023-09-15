@@ -14,7 +14,8 @@
   </a>
 </div>
 
-### Installation
+### Description
+Lalamove api wrapper for NestJS
 
 ## Change Log
 
